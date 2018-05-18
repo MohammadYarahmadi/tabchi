@@ -1,6 +1,6 @@
 redis = (loadfile "./Libs/redis.lua")()
 serpent = (loadfile "./Libs/serpent.lua")()
-sudo = 435014771
+sudo = 376839285
 redis:del("TDTD-IDdelay")
 function dl_cb(arg, data)
 end

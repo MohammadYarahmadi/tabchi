@@ -1,0 +1,40 @@
+echo "Start Launch ..."
+echo ""
+sleep 1
+echo "   •••••                  ••••••                           "
+sleep 0.1
+echo "  •     •  •••••   •   •  •     •  •       •    •   ••••   "
+sleep 0.09
+echo "  •        •    •   • •   •     •  •       •    •  •       "
+sleep 0.08
+echo "   •••••   •    •    •    ••••••   •       •    •   ••••  "
+sleep 0.07
+echo "        •  •••••     •    •        •       •    •       •  "
+sleep 0.06
+echo "  •     •  •         •    •        •       •    •  •    •  "
+sleep 0.05
+echo "   •••••   •         •    •        ••••••   ••••    •••• " 
+echo ""
+sleep 2
+echo "        •• SpyPlus Tabchi ••         "
+echo "      •• AntiDelete Tanbchi ••       "
+echo "       •• Version -1- Beta ••       "
+sleep 0.7
+echo ""
+echo "       ••Channel @UltraSpy••         "
+echo "       ••By :@DarknessSudo••         "
+sleep 2
+tmux new-session -d -s "1" "./1"
+tmux detach -s "1"
+sleep 2
+tmux new-session -d -s "2" "./2"
+tmux detach -s "2"
+sleep 2
+tmux new-session -d -s "3" "./3"
+tmux detach -s "3"
+sleep 2
+tmux new-session -d -s "4" "./4"
+tmux detach -s "4"
+sleep 2
+tmux new-session -d -s "5" "./5"
+tmux detach -s "5"

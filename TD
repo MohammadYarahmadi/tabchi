@@ -1,0 +1,219 @@
+#!/usr/bin/env bash
+
+## VARIABLES
+THIS_DIR=$(cd "$(dirname "$0")"; pwd)
+TDBOT="https://nofoozitm.elithost.in/TD/telegram-bot"
+
+## Print Colorful
+# Print text in red
+prtred() {
+	printf '\e[1;31m%s\n\e[0;39;49m' "$@"
+}
+# Print text in green
+prtgrn() {
+	printf '\e[1;32m%s\n\e[0;39;49m' "$@"
+}
+# Print text in brown
+prtbrown() {
+	printf '\e[1;33m%s\n\e[0;39;49m' "$@"
+}
+
+# autolauncher
+autolaunchmod() {
+	while true ; do
+		for tablighgar in TD-*.lua ; do
+			tab="${tablighgar%.*}"
+			ltab="${tab/-/ }"
+			tmux kill-session -t $tab
+			rm -rf .telegram-bot/$tab/files
+			for tg in .telegram-bot/$tab/data/* ; do
+				rm -rf $tg/*
+			done
+			TMUX= tmux new-session -d -s $tab "./$ltab"
+			tmux detach -s $tab
+		done
+		echo -e " \n\e[1;32m••All Bots Launched \e[1;34m| •UtraSpy• |\e[1;32m Bots Are Running Now••\n\e[0;39;49m"
+		sleep 1200
+	done
+}
+# clear a bot
+clear() {
+	rm -rf .telegram-bot/TD-"$1"
+	rm -rf TD-"$1".lua
+	redis-cli --raw keys "TD"$1* | xargs redis-cli del
+	prtred '
+  •Bot Created•
+ '
+}
+# install Bot
+install() {
+	prtbrown '
+       	•••UltraSpy Tabchi•••
+  ••Wᴀɴᴛ Tᴏ Cᴏɴᴛɪɴᴜᴇ Wᴏʀᴋɪɴɢ?? [Y|N]••:
+ '
+	read -rp ' ' install
+	case "$install" in
+    Y|y|بله)
+		prtred '
+  ••Lσαdιиg тεlεgяαм-вσт
+  ••Fεтcнιиg $TDBOT
+ '
+		wget "$TDBOT" -O telegram-bot
+		chmod +x telegram-bot
+		prtred '
+ ••Uρdαтιиg Lιвѕ Aиd Pαcкαgεѕ
+ '
+		sudo apt-get -y update && sudo apt-get -y upgrade
+		prtred '
+ ••Iиѕтαllιиg Pαcкαgεѕ Aиd Lιвѕ
+ '
+		sudo apt-get --force-yes install git wget screen tmux libconfig9 libevent-dev libjansson4 libstdc++6 lua-socket lua5.2 liblua5.2 make unzip redis-server software-properties-common g++ libconfig++-dev
+		sudo apt-get -y update && sudo apt-get -y upgrade
+		sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test && sudo apt-get -y update && sudo apt-get --force-yes install gcc-4.9 g++-4.9 && sudo update-alternatives —install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 —slave /usr/bin/g++ g++ /usr/bin/g++-4.9
+		prtred '
+ ••Uρdαтιиg Pαcкαgεѕ
+ '
+		sudo apt-get -y update && sudo apt-get -y upgrade && sudo apt-get -y dist-upgrade && sudo apt-get -y autoremove
+		prtred '
+  ••Яεѕтαят яεdιѕ
+ '
+		sudo service redis-server restart
+		prtgrn '
+ ••Яεlσαd Tαвcнι••
+ '
+		git pull
+		prtbrown '
+ ••ѕυccεѕѕƒυllч ιиѕтαllεd••
+ '
+		printf '\e[1;33m%s\n •Lαυиcн Yσυя Tαвcнι Wιтн\e[1;32m ./TD 1\e[0;39;49m%s\n'
+    ;;
+    N|n|خیر)
+		prtbrown '
+ •Done•
+ '
+    ;;
+    *)
+		prtred '
+  •Wrong command•
+ '
+		install
+    ;;
+	esac
+}
+# make config file
+make_config() {
+	mkdir -p "$THIS_DIR"/.telegram-bot/TD-"$1"
+	cfg="$THIS_DIR"/.telegram-bot/TD-$1/TD.cfg
+	TD="$THIS_DIR"/TD-$1.lua
+	if [[ ! -f $cfg ]]; then
+		echo "#Codded By : @DarkNessSudo
+default_profile = \"TD$1\";
+TD$1 = {
+	config_directory = \"$THIS_DIR/.telegram-bot/TD-$1\";
+	test = false;
+	use_file_db = true;
+	use_file_gc = true;
+	file_readable_names = true;
+	use_secret_chats = false;
+	use_chat_info_db = true;
+	use_message_db = true;
+	verbosity = 0;
+	lua_script = \"$THIS_DIR/TD-$1.lua\";
+};" >> $cfg
+	fi
+	if [[ ! -f $TD ]]; then
+		cat TD.lua >> TD-$1.lua
+		sed -i 's/TD-ID/'$1'/g' TD-$1.lua
+	fi
+}
+# login
+login() {
+	clear $1
+	make_config $1
+	prtbrown '
+••Σитεя Tнε Nυмвεя OF Tαвcнι••
+ '
+	read -rp ' ' number
+	num=${number/+/00}
+	./telegram-bot -c "$THIS_DIR"/.telegram-bot/TD-$1/TD.cfg --login --phone="${num// /}"
+	run $1
+}
+# run a bot
+run() {
+	./telegram-bot -c "$THIS_DIR"/.telegram-bot/TD-$1/TD.cfg
+}
+# help and usage
+usage() {
+	printf "\e[1;36m"
+	cat <<EOF
+
+                    $0 [موارد استفاده  : [گزینه ها <<
+                                        : گزینه ها
+        شماره             راه اندازی ربات با این شماره
+    نصب پیش نیاز های تبچی       install
+                   نمایش این متن            help
+   راه‌اندازی تمام ربات ها هر 20 دقیقه          autolaunch
+
+>> Usage: $0 [options]
+    Options:
+      autolaunch        Launch all bots every 20 mins
+      NUMBER            Start bot whit this id number
+      install           Install of Tabchi
+	  login [id]        login to bot
+      help              Print this message
+	  clr [id]          clean data of Bot
+EOF
+	printf "%s\n\e[0;39;49m"
+}
+## MAIN ------------------------------------------------------------------------
+# Make sure this script run inside Bot directory
+cd "$THIS_DIR" || exit
+case $1 in
+	install)
+		install
+	;;
+	autolaunch)
+		tmux kill-session -t autolaunch
+		tmux new-session -s autolaunch "bash bot autolaunchmod"
+	;;
+	autolaunchmod)
+		autolaunchmod
+	;;
+	help)
+		usage
+	;;
+	clr)
+		if [ -z "$2" ]; then
+			prtgrn '
+  ••Σитεя Ðнε Tαвcнι Id,Fσя Ðεlεтιиg•• :
+ '
+			read -rp ' ' ID
+			clear "$ID"
+		else
+			clear "$2"
+		fi
+	;;
+	login)
+		if [ -z "$2" ]; then
+			prtgrn '
+  ••Σитεя тнε Tαвcнι Id Fσя Lσgιи•• :
+ '
+			read -rp ' ' ID
+			login $ID
+		else
+			login "$2"
+		fi
+	;;
+	*)
+		if [[ "$1" =~ ^[0-9]+$ ]] ; then
+			if [ -a "$THIS_DIR"/TD-"$1".lua ]; then
+				make_config $1
+				run $1
+			else
+				login $1
+			fi
+		else
+			usage
+		fi
+	;;
+esac
